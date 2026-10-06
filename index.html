@@ -172,8 +172,17 @@ let theme='dark'; try{theme=localStorage.getItem('th')||'dark'}catch(_){}
 document.documentElement.dataset.theme=theme;
 
 async function api(action,pl={}){
-  const initData=tg?.initData||'';
-  if(!initData) throw new Error('Откройте приложение через бота в Telegram');
+  // Пытаемся взять initData из стандартного объекта Telegram или вытащить напрямую из URL
+  let initData = window.Telegram?.WebApp?.initData || '';
+  if(!initData && window.location.hash) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    initData = hashParams.get('tgWebAppData') || '';
+  }
+  if(!initData && window.location.search) {
+    const searchParams = new URLSearchParams(window.location.search);
+    initData = searchParams.get('tgWebAppData') || '';
+  }
+
   let r;
   try{
     r=action==='init'?await fetch(`${BACKEND_URL}?${new URLSearchParams({action,initData})}`)
@@ -182,6 +191,8 @@ async function api(action,pl={}){
   const t=await r.text();
   try{return JSON.parse(t)}catch(_){throw new Error('Сервер вернул не JSON: проверьте деплой Apps Script (доступ «Все») и логи')}
 }
+
+ 
 const S={tab:'cab',loading:true,p:null,slots:[],blocked:[],dur:60,day:ymd(mskDayAt(0)),time:null,slotId:null,comment:'',busy:false,a:null,q:'',cl:null,hist:null,sh:null};
 const NAV_C=[['cab','home','Кабинет'],['book','cal','Запись'],['plans','wal','Тарифы']];
 const NAV_A=[['inc','bars','Доходы'],['clients','users','Клиенты'],['diary','clip','Дневник']];
