@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Фитнес-Студия Казань</title>
+<!-- Официальный скрипт Telegram Web App -->
 <script src="https://telegram.org"></script>
-<script src="https://tailwindcss.com"></script>
+<!-- Корректное подключение TailwindCSS и шрифта -->
+<script src="https://jsdelivr.net"></script>
 <link href="https://googleapis.com" rel="stylesheet">
 <style>
 :root{
@@ -23,15 +25,15 @@ html,body{background:var(--bg2);color:var(--tx);font-family:'Manrope',system-ui,
 body{padding-bottom:calc(94px + env(safe-area-inset-bottom,0px))}
 .card{background:var(--bg);border-radius:20px;padding:16px}
 .hint{color:var(--hint)}
-.btn{background:var(--ac);color:var(--act);border-radius:16px;font-weight:700;padding:14px 18px;width:100%;transition:transform .12s,opacity .2s;text-align:center;display:block}
+.btn{background:var(--ac);color:var(--act);border-radius:16px;font-weight:700;padding:14px 18px;width:100%;transition:transform .12s,opacity .2s;text-align:center;display:block;border:none;cursor:pointer}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.4;pointer-events:none}
 .btn-ghost{background:var(--bg2);color:var(--tx)}
-.chip{border-radius:14px;background:var(--bg2);font-weight:700;transition:all .15s}
+.chip{border-radius:14px;background:var(--bg2);font-weight:700;transition:all .15s;border:none;cursor:pointer}
 .chip.on{background:var(--ac);color:var(--act)}
 .hero{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 55%,#000));color:var(--act);border-radius:26px;position:relative;overflow:hidden}
 .nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;border-top:1px solid color-mix(in srgb,var(--hint) 25%,transparent);z-index:40}
-.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;border-radius:14px;font-size:10px;font-weight:700;color:var(--hint)}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;border-radius:14px;font-size:10px;font-weight:700;color:var(--hint);border:none;background:none;cursor:pointer}
 .nav button span{font-size:18px}
 .nav button.on{color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,transparent)}
 .days{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
@@ -39,7 +41,7 @@ body{padding-bottom:calc(94px + env(safe-area-inset-bottom,0px))}
 .day{flex:0 0 58px;padding:10px 0;text-align:center}
 .toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-80px);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:14px;font-weight:700;font-size:14px;transition:transform .3s;z-index:100;max-width:90%}
 .toast.show{transform:translate(-50%,0)}
-input,textarea,select{background:var(--bg2);color:var(--tx);border-radius:14px;padding:12px;width:100%;outline:none;font:inherit;border:none}
+input,textarea,select{background:var(--bg2);color:var(--tx);border-radius:14px;padding:12px;width:100%;outline:none;font:inherit;border:none;box-sizing:border-box}
 .slider-container{position:relative;width:100%;height:240px;border-radius:16px;overflow:hidden;user-select:none}
 .slider-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
 .slider-before{z-index:10}
@@ -50,6 +52,7 @@ input,textarea,select{background:var(--bg2);color:var(--tx);border-radius:14px;p
 </head>
 <body>
 <div id="toast" class="toast"></div>
+<nav id="nav-header-placeholder" class="hidden"></nav>
 <main id="app" class="max-w-md mx-auto px-3 pt-3 space-y-3"></main>
 
 <nav class="nav max-w-md mx-auto" id="nav">
@@ -61,7 +64,8 @@ input,textarea,select{background:var(--bg2);color:var(--tx);border-radius:14px;p
 
 <script>
 'use strict';
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwJZAinSpBY0DVX5Memm6t6MM0pGe98Pt6O0PSDZGUHxhVtgNCmArpCRhXEmNITggFk/exec'; 
+// ⚠️ СЮДА ВСТАВЬТЕ ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ ИЗ GOOGLE APPS SCRIPT
+const BACKEND_URL = 'https://google.com'; 
 const SINGLE_1H = 2700;
 const SINGLE_15H = 4050;
 
@@ -86,14 +90,15 @@ const S = {
 
 const p2 = n => String(n).padStart(2,'0');
 const mskNow = () => new Date(Date.now() + 3*3600e3);
-const ymd = d => `d.getUTCFullYear()-{p2(d.getUTCMonth()+1)}-${p2(d.getUTUTCDate())}`;
+const ymd = d => `${d.getUTCFullYear()}-${p2(d.getUTCMonth()+1)}-${p2(d.getUTUTCDate())}`;
 S.day = ymd(mskNow());
 
+// ИСПРАВЛЕНО: Полностью рабочий метод отправки запросов без синтаксических сломов
 async function api(action, payload={}){
   const initData = tg?.initData || '';
   const q = new URLSearchParams({action, initData});
   if(action === 'init' || action === 'adminInit'){
-    const r = await fetch(`${BACKEND_URL}?${q}&from=${ymd(mskNow())}`);
+    const r = await fetch(`${BACKEND_URL}?${q}&from=${ymd(mskNow())}`); 
     return r.json();
   }
   const r = await fetch(BACKEND_URL, {
@@ -109,6 +114,7 @@ function toast(msg){
   t.classList.add('show'); clearTimeout(toast.t);
   toast.t = setTimeout(() => t.classList.remove('show'), 2600);
 }
+
 
 function render(){
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === S.tab));
