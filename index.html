@@ -304,7 +304,27 @@ function render(){
 function paintSheet(){$('#sheet').innerHTML=S.sh?sheetHtml():''}
 async function loadAdmin(){const r=await api('adminData');if(!r.ok)throw new Error(r.error);S.a=r}
 async function reload(){const d=await api('init');if(d.ok===false)throw new Error(d.error);S.p=d.profile;S.slots=d.scheduleSlots||[];S.blocked=d.blockedDays||[]}
-function go(t){S.tab=t;S.cl=null;S.sh=null;render();window.scrollTo({top:0});if(adm())loadAdmin().then(render).catch(()=>{})}
+function go(t){
+  S.tab = t;
+  S.cl = null;
+  S.sh = null;
+  render();
+  window.scrollTo({top:0});
+  if(adm()) {
+    S.loading = true; // включаем скелетон на время запроса
+    render();
+    loadAdmin()
+      .then(() => {
+        S.loading = false; // выключаем его, когда данные пришли
+        render();
+      })
+      .catch(() => {
+        S.loading = false;
+        render();
+      });
+  }
+}
+
 function pickPhoto(cb){const i=document.createElement('input');i.type='file';i.accept='image/*';
   i.onchange=()=>{const f=i.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.8))};im.src=URL.createObjectURL(f)};i.click()}
 let rec=null;
