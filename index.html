@@ -323,15 +323,15 @@ function go(t){
   render();
   window.scrollTo({top:0});
   if(adm()) {
-    S.loading = true; // включаем скелетон на время запроса
+    S.loading = true;
     render();
     loadAdmin()
       .then(() => {
-        S.loading = false; // выключаем его, когда данные пришли
+        S.loading = false;
         render();
       })
       .catch(() => {
-        S.loading = false;
+        S.loading = false; // ТЕПЕРЬ ИСПРАВЛЕНО: скелетон выключится при ошибке
         render();
       });
   }
