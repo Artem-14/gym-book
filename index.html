@@ -337,18 +337,25 @@ document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { S.tab 
 async function initApp() {
   try {
     const data = await api('init');
-    if (data.ok) {
+    if (data && data.ok) {
       S.profile = data.profile;
       S.scheduleSlots = data.scheduleSlots || [];
       S.isAdmin = data.isAdmin || false;
-      S.adminData = data.clientsDatabase || null; // Связываем базу CRM для тренера
+      S.adminData = data.clientsDatabase || null; 
       S.loading = false;
       render();
     } else {
-      throw new Error(data.error);
+      // ИСПРАВЛЕНО: Выводим ошибку бэкенда на экран, если он вернул ok: false
+      throw new Error(data?.error || 'Бэкенд вернул пустой или ошибочный ответ');
     }
   } catch(e) {
-    document.getElementById('app').innerHTML = '<div class="card p-4 text-center text-red-500 font-bold">Ошибка соединения с бэкендом.</div>';
+    // ИСПРАВЛЕНО: Теперь, если что-то сломается, телефон покажет точный текст ошибки вместо серого экрана
+    document.getElementById('app').innerHTML = `
+      <div class="card p-4 text-center text-red-500 font-bold">
+        Ошибка соединения с бэкендом:<br>
+        <span class="text-xs font-normal text-gray-500">${esc(e.message)}</span>
+      </div>
+    `;
   }
 }
 
