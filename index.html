@@ -295,7 +295,8 @@ function sheetHtml(){
 /* ===== РЕНДЕР ===== */
 function render(){
   const u=tg?.initDataUnsafe?.user, a=adm();
-  $('#hd').innerHTML=`<div class="av">${esc(S.p?.initials||((u?.first_name||'')[0]||'')+((u?.last_name||'')[0]||''))}</div><div><div class="lbl">${a?'Режим тренера':'Ваш тренер'}</div><div class="nm">${TRAINER}</div></div><button class="ib" data-a="theme">${theme==='dark'?IC.sun:IC.moon}</button>`;
+  // Стало:
+\$('#hd').innerHTML=`<div class="av">${esc(S.p?.initials||((u?.first_name||'')||'')+((u?.last_name||'')||''))}</div>${a ? `<div><div class="lbl">Режим тренера</div><div class="nm">\${TRAINER}</div></div>` : `<button onclick="openLink('https://t.me' + TRAINER_TG)" style="display:block; text-align:left; active {opacity: 0.7}"><div class="lbl" style="color:var(--ac); display:flex; align-items:center; gap:4px">Ваш тренер <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div><div class="nm" style="text-decoration:underline; text-underline-offset:3px">\${TRAINER}</div></button>`}<button class="ib" data-a="theme">${theme==='dark'?IC.sun:IC.moon}</button>`;
   $('#nav').innerHTML=(a?NAV_A:NAV_C).map(([t,i,l])=>`<button data-a="tab" data-v="${t}" class="${S.tab===t?'on':''}"><span>${IC[i]}</span><em>${l}</em></button>`).join('');
   const V={cab:vCab,book:vBook,plans:vPlans,inc:vInc,clients:vClients,diary:vDiary};
   $('#app').innerHTML=S.loading?'<div class="sk"></div><div class="sk"></div><div class="sk"></div>':V[S.tab]();
