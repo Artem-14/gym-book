@@ -389,7 +389,20 @@ const ACT={
  blk:async()=>{if(!await ask('Заблокировать все свободные слоты на сегодня?'))return;
   try{const r=await api('blockDay',{date:S.a.todayDate});if(!r.ok)throw new Error(r.error);hap.ok();toast(`Заблокировано слотов: ${r.blocked}`+(r.kept?` · записей клиентов: ${r.kept}`:''))}catch(e){hap.err();toast(e.message||'Ошибка')}}
 };
-document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||el.disabled)return;if(el.classList.contains('bd')&&e.target!==el)return;hap.tap();ACT[el.dataset.a]?.(el.dataset.v,el)});
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-a]');
+  if(!el||el.disabled)return;
+  if(el.classList.contains('bd')&&e.target!==el)return;
+  hap.tap();
+  try {
+    ACT[el.dataset.a]?.(el.dataset.v,el);
+  } catch(err) {
+    console.error(err);
+    toast('Что-то пошло не так');
+  }
+});
+
+ 
 document.addEventListener('input',e=>{const t=e.target;
   if(t.matches('.ba input'))t.parentNode.style.setProperty('--p',t.value+'%');
   else if(t.id==='cm')S.comment=t.value;
