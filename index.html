@@ -132,7 +132,7 @@ nav .on span{background:var(--ac);color:var(--act)}nav .on em{color:var(--tx);fo
 <nav><div id="nav"></div></nav>
 <script>
 'use strict';
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Сафин Динар', CANCEL_LIMIT_H=12, P1=2700, P15=4050, TRAINER_TG='Safin_d';
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Сафин Динар', CANCEL_LIMIT_H=12, P1=2700, P15=4050, TRAINER_TG='@Safin_d';
 const TARIFFS=[
  {id:'test',tag:'СТАРТ',name:'Тест-драйв',n:1,price:2700,sub:'Знакомство с тренером'},
  {id:'std',tag:'ВЫБОР КЛИЕНТОВ',name:'Стандарт',n:8,price:20800,old:24000,top:1},
@@ -298,7 +298,7 @@ function render(){
  
 $('#hd').innerHTML = `<div class="av">${esc(S.p?.initials || ((u?.first_name || '')[0] || '') + ((u?.last_name || '')[0] || ''))}</div>
 ${a ? `<div><div class="lbl">Режим тренера</div><div class="nm">\${TRAINER}</div></div>` 
-  : `<button onclick="openLink('https://t.me/@' + TRAINER_TG)" style="display:block; text-align:left; cursor:pointer"><div class="lbl" style="color:var(--ac); display:flex; align-items:center; gap:4px">Ваш тренер <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div><div class="nm" style="text-decoration:underline; text-underline-offset:3px">\${TRAINER}</div></button>`}
+  : `<button onclick="openLink('https://t.me/' + TRAINER_TG)" style="display:block; text-align:left; cursor:pointer"><div class="lbl" style="color:var(--ac); display:flex; align-items:center; gap:4px">Ваш тренер <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg></div><div class="nm" style="text-decoration:underline; text-underline-offset:3px">\${TRAINER}</div></button>`}
   <button class="ib" data-a="theme">${theme === 'dark' ? IC.sun : IC.moon}</button>`;
 
 
