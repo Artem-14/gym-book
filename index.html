@@ -93,7 +93,7 @@ async function api(action, payload={}){
   const initData = tg?.initData || '';
   const q = new URLSearchParams({action, initData});
   if(action === 'init' || action === 'adminInit'){
-    const r = await fetch(`BACKENDURL?{q}&from=${ymd(mskNow())}`); 
+    const r = await fetch(`${BACKEND_URL}?${q}&from=${ymd(mskNow())}`);
     return r.json();
   }
   const r = await fetch(BACKEND_URL, {
