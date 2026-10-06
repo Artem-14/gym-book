@@ -132,7 +132,7 @@ nav .on span{background:var(--ac);color:var(--act)}nav .on em{color:var(--tx);fo
 <nav><div id="nav"></div></nav>
 <script>
 'use strict';
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Михаил Крылов', CANCEL_LIMIT_H=12, P1=2700, P15=4050;
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Динар Сафин', CANCEL_LIMIT_H=12, P1=2700, P15=4050;
 const TARIFFS=[
  {id:'test',tag:'СТАРТ',name:'Тест-драйв',n:1,price:2700,sub:'Знакомство с тренером'},
  {id:'std',tag:'ВЫБОР КЛИЕНТОВ',name:'Стандарт',n:8,price:20800,old:24000,top:1},
@@ -173,9 +173,14 @@ document.documentElement.dataset.theme=theme;
 
 async function api(action,pl={}){
   const initData=tg?.initData||'';
-  if(action==='init'){const r=await fetch(`${BACKEND_URL}?${new URLSearchParams({action,initData})}`);return r.json()}
-  const r=await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,initData,...pl})});
-  return r.json();
+  if(!initData) throw new Error('Откройте приложение через бота в Telegram');
+  let r;
+  try{
+    r=action==='init'?await fetch(`${BACKEND_URL}?${new URLSearchParams({action,initData})}`)
+      :await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,initData,...pl})});
+  }catch(e){throw new Error('Нет связи с сервером')}
+  const t=await r.text();
+  try{return JSON.parse(t)}catch(_){throw new Error('Сервер вернул не JSON: проверьте деплой Apps Script (доступ «Все») и логи')}
 }
 const S={tab:'cab',loading:true,p:null,slots:[],blocked:[],dur:60,day:ymd(mskDayAt(0)),time:null,slotId:null,comment:'',busy:false,a:null,q:'',cl:null,hist:null,sh:null};
 const NAV_C=[['cab','home','Кабинет'],['book','cal','Запись'],['plans','wal','Тарифы']];
@@ -250,7 +255,8 @@ function clientRows(){
    <span class="cb"><b>${c.balance}</b><small>занятий</small></span><span class="mut">${IC.chev}</span></button>`}).join('')||'<div class="mut small" style="padding:14px 0">Никого не найдено</div>';
 }
 function vClients(){
-  if(S.cl) return vClient(S.a.clients.find(x=>x.id===S.cl));
+  const cc=S.cl&&S.a.clients.find(x=>x.id===S.cl); if(S.cl&&!cc)S.cl=null;
+  if(cc) return vClient(cc);
   return `<div class="lbl">CRM</div><h1>Клиенты<span class="cnt">${S.a.clients.length}</span></h1>
   <div class="srch">${IC.srch}<input id="q" placeholder="Имя клиента" value="${esc(S.q)}"><b>НАЙТИ</b></div><div id="cl" style="margin-top:6px">${clientRows()}</div>`;
 }
@@ -356,11 +362,12 @@ document.addEventListener('input',e=>{const t=e.target;
   else if(t.id==='cm')S.comment=t.value;
   else if(t.id==='q'){S.q=t.value;$('#cl').innerHTML=clientRows()}
   else if(t.dataset.f&&S.sh)S.sh[t.dataset.f]=t.value});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!S.loading&&!S.busy&&!S.sh)reload().then(()=>adm()?loadAdmin():0).then(render).catch(()=>{})});
 (async function(){
   render();
   try{await reload();S.loading=false;
     if(adm()){S.tab='diary';await loadAdmin()}
     render();
-  }catch(e){$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`}
+  }catch(e){$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px;word-break:break-word">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`}
 })();
 </script></body></html>
