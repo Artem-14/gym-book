@@ -170,7 +170,7 @@ function viewCab(){
 
   <section class="card">
     <div class="font-extrabold mb-2">Ближайшее занятие</div>
-    ${n ? `<div class="text-md font-bold text-blue-600">\({esc(n.date)} в \){esc(n.time)}</div><div class="text-xs hint mt-1">План: \${esc(n.comment) || 'без комментария'}</div>` : '<div class="hint text-sm">Нет active записей.</div>'}
+    ${n ? `<div class="text-md font-bold text-blue-600">esc(n.date) в {esc(n.time)}</div><div class="text-xs hint mt-1">План: \${esc(n.comment) || 'без комментария'}</div>` : '<div class="hint text-sm">Нет активных записей.</div>'}
   </section>
   `;
 }
@@ -186,7 +186,7 @@ function viewBook(){
     <button data-dur="90" class="chip py-3 ${S.dur===90?'on':''}">1.5 часа (1.5 балла)</button>
   </div>
   <div class="days overflow-x-auto pb-1">
-    ${days.map(d => `<button data-day="\${d}" class="chip day p-2 \({S.day===d?'on':''}">\){d.substring(5)}</button>`).join('')}
+    ${days.map(d => `<button data-day="\${d}" class="chip day p-2 S.day===d?'on':''">{d.substring(5)}</button>`).join('')}
   </div>
   <div class="card">
     <div class="font-extrabold mb-2">Доступное время в Казани</div>
