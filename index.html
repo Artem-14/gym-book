@@ -109,8 +109,8 @@ nav button{display:flex;flex-direction:column;align-items:center;gap:5px;color:v
 nav span{width:54px;height:40px;border-radius:16px;display:grid;place-items:center}
 nav em{font-style:normal;font-size:10px;font-weight:700}
 nav .on span{background:var(--ac);color:var(--act)}nav .on em{color:var(--tx);font-weight:800}
-#sheet{position:fixed;inset:0;z-index:30}
-#sheet .bd{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+#sheet{position:fixed;inset:0;z-index:30;pointer-events:none} /* Пропускает клики, когда пустой */
+#sheet .bd{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);pointer-events:auto} /* Ловит клики для закрытия */
 #sheet .pn{position:absolute;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;background:var(--card2);border-radius:28px 28px 0 0;padding:12px 20px 100px;border:1px solid var(--line)}
 .hdl{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 18px}
 .pn h2{font-size:26px;font-weight:800;margin:14px 0 18px;letter-spacing:-.02em}
