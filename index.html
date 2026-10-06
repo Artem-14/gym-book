@@ -98,16 +98,18 @@ async function api(action, payload={}){
   const initData = tg?.initData || '';
   const q = new URLSearchParams({action, initData});
   if(action === 'init' || action === 'adminInit'){
+    // Для GET запроса убираем лишние заголовки, чтобы избежать префлайт-блокировки
     const r = await fetch(`${BACKEND_URL}?${q}&from=${ymd(mskNow())}`); 
     return r.json();
   }
   const r = await fetch(BACKEND_URL, {
     method: 'POST',
-    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    headers: {'Content-Type': 'text/plain;charset=utf-8'}, // Отправляем как текст для обхода CORS
     body: JSON.stringify({action, initData, ...payload})
   });
   return r.json();
 }
+
 
 function toast(msg){
   const t = document.getElementById('toast'); t.textContent = msg;
