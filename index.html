@@ -132,7 +132,7 @@ nav .on span{background:var(--ac);color:var(--act)}nav .on em{color:var(--tx);fo
 <nav><div id="nav"></div></nav>
 <script>
 'use strict';
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Сафин Динар', CANCEL_LIMIT_H=12, P1=2700, P15=4050, TRAINER_TG='@Safin_d';
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Сафин Динар', CANCEL_LIMIT_H=12, P1=2700, P15=4050;
 const TARIFFS=[
  {id:'test',tag:'СТАРТ',name:'Тест-драйв',n:1,price:2700,sub:'Знакомство с тренером'},
  {id:'std',tag:'ВЫБОР КЛИЕНТОВ',name:'Стандарт',n:8,price:20800,old:24000,top:1},
@@ -295,10 +295,7 @@ function sheetHtml(){
 /* ===== РЕНДЕР ===== */
 function render(){
   const u=tg?.initDataUnsafe?.user, a=adm();
- 
-$('#hd').innerHTML = `<div class="av">${esc(S.p?.initials || ((u?.first_name || '')[0] || '') + ((u?.last_name || '')[0] || ''))}</div>
-$('#hd').innerHTML=`<div class="av">${esc(S.p?.initials||((u?.first_name||'')||'')+((u?.last_name||'')||''))}</div><div><div class="lbl">${a?'Режим тренера':'Ваш тренер'}</div><div class="nm">${TRAINER}</div></div><button class="ib" data-a="theme">${theme==='dark'?IC.sun:IC.moon}</button>`;
-
+  $('#hd').innerHTML=`<div class="av">${esc(S.p?.initials||((u?.first_name||'')[0]||'')+((u?.last_name||'')[0]||''))}</div><div><div class="lbl">${a?'Режим тренера':'Ваш тренер'}</div><div class="nm">${TRAINER}</div></div><button class="ib" data-a="theme">${theme==='dark'?IC.sun:IC.moon}</button>`;
   $('#nav').innerHTML=(a?NAV_A:NAV_C).map(([t,i,l])=>`<button data-a="tab" data-v="${t}" class="${S.tab===t?'on':''}"><span>${IC[i]}</span><em>${l}</em></button>`).join('');
   const V={cab:vCab,book:vBook,plans:vPlans,inc:vInc,clients:vClients,diary:vDiary};
   $('#app').innerHTML=S.loading?'<div class="sk"></div><div class="sk"></div><div class="sk"></div>':V[S.tab]();
@@ -394,4 +391,3 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!S.loadin
   }catch(e){$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px;word-break:break-word">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`}
 })();
 </script></body></html>
-
