@@ -132,7 +132,7 @@ nav .on span{background:var(--ac);color:var(--act)}nav .on em{color:var(--tx);fo
 <nav><div id="nav"></div></nav>
 <script>
 'use strict';
-const BACKEND_URL='https://script.google.com/macros/s/AKfycbz-NWNz4Q-R-0xAsbXDA9OmSIVSf0mm-k88qou0z4_4jiUaGjstbtTLXcdB56egqF6S/exec', TRAINER='Динар Сафин', CANCEL_LIMIT_H=12, P1=2700, P15=4050;
+const BACKEND_URL='https://script.google.com/macros/s/AKfycbws1g6JzvEz10AWq8iDEbgNpcabJ4olE9yYFDZT1WzC8z2OLSus4b56HHhDGMeSBqE8/exec', TRAINER='Михаил Крылов', CANCEL_LIMIT_H=12, P1=2700, P15=4050;
 const TARIFFS=[
  {id:'test',tag:'СТАРТ',name:'Тест-драйв',n:1,price:2700,sub:'Знакомство с тренером'},
  {id:'std',tag:'ВЫБОР КЛИЕНТОВ',name:'Стандарт',n:8,price:20800,old:24000,top:1},
@@ -172,17 +172,8 @@ let theme='dark'; try{theme=localStorage.getItem('th')||'dark'}catch(_){}
 document.documentElement.dataset.theme=theme;
 
 async function api(action,pl={}){
-  // Пытаемся взять initData из стандартного объекта Telegram или вытащить напрямую из URL
-  let initData = window.Telegram?.WebApp?.initData || '';
-  if(!initData && window.location.hash) {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    initData = hashParams.get('tgWebAppData') || '';
-  }
-  if(!initData && window.location.search) {
-    const searchParams = new URLSearchParams(window.location.search);
-    initData = searchParams.get('tgWebAppData') || '';
-  }
-
+  const initData=tg?.initData||'';
+  if(!initData) throw new Error('Откройте приложение через бота в Telegram');
   let r;
   try{
     r=action==='init'?await fetch(`${BACKEND_URL}?${new URLSearchParams({action,initData})}`)
@@ -191,8 +182,6 @@ async function api(action,pl={}){
   const t=await r.text();
   try{return JSON.parse(t)}catch(_){throw new Error('Сервер вернул не JSON: проверьте деплой Apps Script (доступ «Все») и логи')}
 }
-
- 
 const S={tab:'cab',loading:true,p:null,slots:[],blocked:[],dur:60,day:ymd(mskDayAt(0)),time:null,slotId:null,comment:'',busy:false,a:null,q:'',cl:null,hist:null,sh:null};
 const NAV_C=[['cab','home','Кабинет'],['book','cal','Запись'],['plans','wal','Тарифы']];
 const NAV_A=[['inc','bars','Доходы'],['clients','users','Клиенты'],['diary','clip','Дневник']];
@@ -315,29 +304,7 @@ function render(){
 function paintSheet(){$('#sheet').innerHTML=S.sh?sheetHtml():''}
 async function loadAdmin(){const r=await api('adminData');if(!r.ok)throw new Error(r.error);S.a=r}
 async function reload(){const d=await api('init');if(d.ok===false)throw new Error(d.error);S.p=d.profile;S.slots=d.scheduleSlots||[];S.blocked=d.blockedDays||[]}
-
-function go(t){
-  S.tab = t;
-  S.cl = null;
-  S.sh = null;
-  render();
-  window.scrollTo({top:0});
-  if(adm()) {
-    S.loading = true;
-    render();
-    loadAdmin()
-      .then(() => {
-        S.loading = false;
-        render();
-      })
-      .catch(() => {
-        S.loading = false; // ТЕПЕРЬ ИСПРАВЛЕНО: скелетон выключится при ошибке
-        render();
-      });
-  }
-}
-
- 
+function go(t){S.tab=t;S.cl=null;S.sh=null;render();window.scrollTo({top:0});if(adm())loadAdmin().then(render).catch(()=>{})}
 function pickPhoto(cb){const i=document.createElement('input');i.type='file';i.accept='image/*';
   i.onchange=()=>{const f=i.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.8))};im.src=URL.createObjectURL(f)};i.click()}
 let rec=null;
@@ -389,43 +356,19 @@ const ACT={
  blk:async()=>{if(!await ask('Заблокировать все свободные слоты на сегодня?'))return;
   try{const r=await api('blockDay',{date:S.a.todayDate});if(!r.ok)throw new Error(r.error);hap.ok();toast(`Заблокировано слотов: ${r.blocked}`+(r.kept?` · записей клиентов: ${r.kept}`:''))}catch(e){hap.err();toast(e.message||'Ошибка')}}
 };
-document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-a]');
-  if(!el||el.disabled)return;
-  if(el.classList.contains('bd')&&e.target!==el)return;
-  hap.tap();
-  try {
-    ACT[el.dataset.a]?.(el.dataset.v,el);
-  } catch(err) {
-    console.error(err);
-    toast('Что-то пошло не так');
-  }
-});
-
- 
+document.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||el.disabled)return;if(el.classList.contains('bd')&&e.target!==el)return;hap.tap();ACT[el.dataset.a]?.(el.dataset.v,el)});
 document.addEventListener('input',e=>{const t=e.target;
   if(t.matches('.ba input'))t.parentNode.style.setProperty('--p',t.value+'%');
   else if(t.id==='cm')S.comment=t.value;
   else if(t.id==='q'){S.q=t.value;$('#cl').innerHTML=clientRows()}
   else if(t.dataset.f&&S.sh)S.sh[t.dataset.f]=t.value});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!S.loading&&!S.busy&&!S.sh)reload().then(()=>adm()?loadAdmin():0).then(render).catch(()=>{})});
- 
 (async function(){
   render();
-  try{
-    await reload();
-    if(adm()){
-      S.tab = 'diary';
-      S.loading = true; // включаем загрузку для админки
-      render();
-      await loadAdmin();
-    }
-    S.loading = false; // гарантированно выключаем скелетоны для всех
+  try{await reload();S.loading=false;
+    if(adm()){S.tab='diary';await loadAdmin()}
     render();
-  }catch(e){
-    S.loading = false;
-    \$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px;word-break:break-word">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`;
-  }
+  }catch(e){$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px;word-break:break-word">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`}
 })();
-
 </script></body></html>
+
