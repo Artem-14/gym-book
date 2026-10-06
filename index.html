@@ -115,18 +115,17 @@ function toast(msg){
   toast.t = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
-
 function render(){
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === S.tab));
   if(S.isAdmin) document.getElementById('nav-admin').classList.remove('hidden');
   
-  const $app = document.getElementById('app');
-  if(S.loading){ $app.innerHTML = '<div class="p-10 text-center hint">Загрузка данных студии...</div>'; return; }
+  const \$app = document.getElementById('app');
+  if(S.loading){ \$app.innerHTML = '<div class="p-10 text-center hint">Загрузка данных студии...</div>'; return; }
   
-  if(S.tab === 'cab') $app.innerHTML = viewCab();
-  else if(S.tab === 'book') $app.innerHTML = viewBook();
-  else if(S.tab === 'plans') $app.innerHTML = viewPlans();
-  else if(S.tab === 'admin') $app.innerHTML = viewAdmin();
+  if(S.tab === 'cab') \$app.innerHTML = viewCab();
+  else if(S.tab === 'book') \$app.innerHTML = viewBook();
+  else if(S.tab === 'plans') \$app.innerHTML = viewPlans();
+  else if(S.tab === 'admin') \$app.innerHTML = viewAdmin();
   
   bind();
   if(S.tab === 'cab' && S.profile?.photoBefore) initSlider();
@@ -137,26 +136,26 @@ function viewCab(){
   const n = p.next;
   return `
   <section class="card space-y-2">
-    <div class="text-xl font-extrabold">${p.name}</div>
-    <div class="hint text-sm">${p.phone || 'Телефон не указан'} | ${p.email || 'Email не указан'}</div>
-    <div class="text-xs text-red-500 bg-red-50 px-2 py-1 rounded inline-block">Цель: ${p.target || 'Не задана'}</div>
+    <div class="text-xl font-extrabold">${esc(p.name)}</div>
+    <div class="hint text-sm">${esc(p.phone) || 'Телефон не указан'} | ${esc(p.email) || 'Email не указан'}</div>
+    <div class="text-xs text-red-500 bg-red-50 px-2 py-1 rounded inline-block">Цель: ${esc(p.goal) || 'Не задана'}</div>
   </section>
 
   <section class="hero p-5">
     <div class="text-sm opacity-80 font-semibold">Остаток баланса</div>
-    <div class="text-6xl font-extrabold my-1">${p.balance} <span class="text-xl">балла</span></div>
-    <div class="text-xs opacity-90">Абонемент сгорает через 60 дней после покупки. Действует до: ${p.expires || '—'}</div>
+    <div class="text-6xl font-extrabold my-1">${p.balance} <span class="text-xl">зан.</span></div>
+    <div class="text-xs opacity-90">Абонемент действует до: ${p.expires || '—'}</div>
   </section>
 
   ${p.photoBefore ? `
   <section class="card">
-    <div class="font-extrabold mb-2">Ваш прогресс Слайдер</div>
+    <div class="font-extrabold mb-2">Ваш прогресс</div>
     <div class="slider-container" id="slider">
-      <img src="${p.photoAfter || p.photoBefore}" class="slider-img slider-after" />
-      <div class="slider-before absolute top-0 left-0 h-full overflow-hidden" style="width:${S.sliderPos}%">
-        <img src="${p.photoBefore}" class="absolute top-0 left-0 h-full slider-img" style="width:100%" />
+      <img src="\${p.photoAfter || p.photoBefore}" class="slider-img slider-after" />
+      <div class="slider-before absolute top-0 left-0 h-full overflow-hidden" style="width:\${S.sliderPos}%">
+        <img src="\${p.photoBefore}" class="absolute top-0 left-0 h-full slider-img" style="width:100vw; max-width:448px;" />
       </div>
-      <div class="slider-handle" style="left:${S.sliderPos}%"><div class="slider-button">↔</div></div>
+      <div class="slider-handle" style="left:\${S.sliderPos}%"><div class="slider-button">↔</div></div>
     </div>
   </section>` : ''}
 
@@ -169,7 +168,7 @@ function viewCab(){
 
   <section class="card">
     <div class="font-extrabold mb-2">Ближайшее занятие</div>
-    ${n ? `<div class="text-md font-bold text-blue-600">${n.date} в ${n.time}</div><div class="text-xs hint mt-1">План: ${n.comment || 'без комментария'}</div>` : '<div class="hint text-sm">Нет активных записей.</div>'}
+    ${n ? `<div class="text-md font-bold text-blue-600">\({esc(n.date)} в \){esc(n.time)}</div><div class="text-xs hint mt-1">План: \${esc(n.comment) || 'без комментария'}</div>` : '<div class="hint text-sm">Нет active записей.</div>'}
   </section>
   `;
 }
@@ -185,18 +184,18 @@ function viewBook(){
     <button data-dur="90" class="chip py-3 ${S.dur===90?'on':''}">1.5 часа (1.5 балла)</button>
   </div>
   <div class="days overflow-x-auto pb-1">
-    ${days.map(d => `<button data-day="${d}" class="chip day p-2 S.day===d?'on':''">{d.substring(5)}</button>`).join('')}
+    ${days.map(d => `<button data-day="\${d}" class="chip day p-2 \({S.day===d?'on':''}">\){d.substring(5)}</button>`).join('')}
   </div>
   <div class="card">
-    <div class="font-extrabold mb-2">Доступное время в Казани (Амирхана)</div>
-    ${slots.length === 0 ? '<div class="p-4 text-center hint text-sm">Свободных окон нет (или действует буфер тренера)</div>' : `
+    <div class="font-extrabold mb-2">Доступное время в Казани</div>
+    ${slots.length === 0 ? '<div class="p-4 text-center hint text-sm">Свободных окон нет (или действует буфер)</div>' : `
     <div class="grid grid-cols-4 gap-2">
-      ${slots.map(s => `<button data-time="${s.time}" data-id="${s.id}" class="chip py-2 text-xs S.time===s.time?'on':''">{s.time}</button>`).join('')}
+      \${slots.map(s => `<button data-time="${s.time}" data-id="${s.id}" class="chip py-2 text-xs ${S.time===s.time?'on':''}">${s.time}</button>`).join('')}
     </div>`}
   </div>
-  <textarea id="book-comment" placeholder="Что хотим проработать на тренировке?">${S.comment}</textarea>
-  <button id="book-confirm-btn" class="btn w-full" ${!S.time ? 'disabled' : ''}>
-    ${S.profile.balance <= 0 ? `Разовая оплата онлайн (${currentPrice} ₽)` : 'Записаться по абонементу'}
+  <textarea id="book-comment" class="card w-full" placeholder="Что хотим проработать на тренировке?">${esc(S.comment)}</textarea>
+  <button id="book-confirm-btn" class="btn w-full mt-2" ${!S.time ? 'disabled' : ''}>
+    ${S.profile.balance <= 0 ? `Разовая оплата онлайн (\${currentPrice} ₽)` : 'Записаться по абонементу'}
   </button>
   `;
 }
@@ -207,68 +206,34 @@ function viewPlans(){
     <div class="card border-2 border-blue-500">
       <div class="font-extrabold text-lg">Пакет «Стандарт» (10 занятий)</div>
       <div class="text-2xl font-black text-blue-600 mt-1">24 000 ₽ <span class="text-xs hint line-through text-gray-400">27 000 ₽</span></div>
-      <div class="text-xs hint mt-1">Срок действия: 2 месяца. Выгода 3000 ₽</div>
+      <div class="text-xs hint mt-1">Срок действия: 2 месяца.</div>
       <button data-buy="std" class="btn mt-3 w-full">Купить пакет</button>
     </div>
     <div class="card">
       <div class="font-extrabold text-lg">Пакет «Результат» (20 занятий)</div>
       <div class="text-2xl font-black text-blue-600 mt-1">45 000 ₽ <span class="text-xs hint line-through text-gray-400">54 000 ₽</span></div>
-      <div class="text-xs hint mt-1">Срок действия: 2 месяца. Выгода 9000 ₽</div>
+      <div class="text-xs hint mt-1">Срок действия: 2 месяца.</div>
       <button data-buy="res" class="btn mt-3 w-full">Купить пакет</button>
     </div>
     <div class="card">
       <div class="font-extrabold text-lg">Пакет «Тест-драйв» (4 занятия)</div>
       <div class="text-2xl font-black text-blue-600 mt-1">10 000 ₽ <span class="text-xs hint line-through text-gray-400">10 800 ₽</span></div>
-      <div class="text-xs hint mt-1">Срок действия: 2 месяца. Отличный старт</div>
+      <div class="text-xs hint mt-1">Срок действия: 2 месяца.</div>
       <button data-buy="test" class="btn mt-3 w-full">Купить пакет</button>
     </div>
   </div>`;
 }
 
-}
-
 function viewAdmin(){
   const ad = S.adminData;
-  if(!ad) return '<div class="p-5 hint text-center">Загрузка админ-панели...</div>';
+  if(!ad) return '<div class="p-5 hint text-center">Загрузка панели администратора...</div>';
   return `
   <div class="space-y-4">
     <div class="card bg-gray-900 text-white p-4 rounded-2xl">
-      <div class="text-xs uppercase tracking-wider text-gray-400 font-bold">Финансовый дашборд тренера</div>
-      <div class="text-3xl font-black mt-1 text-green-400">${ad.analytics.totalMonth} ₽</div>
-      <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-800 text-xs">
-        <div>💳 ЮKassa: <b class="text-blue-400">${ad.analytics.yookassa} ₽</b></div>
-        <div>💵 Наличные/Сбер: <b class="text-yellow-400">${ad.analytics.cash} ₽</b></div>
-      </div>
+      <div class="text-xs uppercase tracking-wider text-gray-400 font-bold">Панель тренера</div>
       <div class="mt-3 flex gap-2">
-        <input type="date" id="block-date" class="text-black text-xs p-1 rounded" value="${S.day}">
-        <button id="block-day-btn" class="bg-red-600 text-xs font-bold px-3 py-1 rounded">🔒 Блок дня (Выходной)</button>
-      </div>
-    </div>
-
-    <div class="card space-y-2">
-      <div class="font-extrabold text-md">Дневник тренировок на сегодня</div>
-      ${ad.todayBookings.length === 0 ? '<div class="hint text-xs">На сегодня записей нет</div>' : ad.todayBookings.map(b => `
-        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-2 text-xs border border-gray-200">
-          <div class="flex justify-between font-bold">
-            <span>⏰ b.time—{b.name}</span>
-            <span class="text-blue-500">\${b.status}</span>
-          </div>
-          <button data-finish-id="b.id"data-tg="{b.tgId}" class="bg-green-600 text-white px-3 py-1 rounded font-bold w-full text-center">Завершить занятие</button>
-        </div>
-      `).join('')}
-    </div>
-
-    <div id="finish-form-block" class="card hidden space-y-2 bg-green-50 border border-green-300">
-      <div class="font-bold text-sm text-green-800">Завершение занятия пользователя</div>
-      <input type="text" id="fin-what" placeholder="Что делали (Программа тренировки)">
-      <select id="fin-health">
-        <option value="Отлично">Отлично</option>
-        <option value="Устал(а)">Устал(а)</option>
-        <option value="Болели мышцы/суставы">Болели мышцы/суставы</option>
-      </select>
-      <div class="flex gap-2">
-        <button id="fin-whisper-btn" class="bg-blue-500 text-white font-bold p-2 rounded text-xs">🎤 Запись голоса (Whisper)</button>
-        <button id="fin-save-btn" class="bg-green-700 text-white font-bold px-4 py-2 rounded text-xs flex-1">Сохранить в Архив</button>
+        <input type="date" id="block-date" class="text-black text-xs p-2 bg-white rounded" value="${S.day}">
+        <button id="block-day-btn" class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded">🔒 Блок дня (Выходной)</button>
       </div>
     </div>
 
@@ -276,12 +241,11 @@ function viewAdmin(){
       <div class="font-extrabold text-md">База клиентов студии</div>
       <input type="text" id="client-search" placeholder="Поиск по имени клиента..." class="text-sm">
       <div class="space-y-2 max-h-60 overflow-y-auto pt-2" id="admin-clients-list">
-        ${ad.clients.map(c => `
-          <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl space-y-1 text-xs client-card" data-name="\${c.name.toLowerCase()}">
-            <div class="font-bold text-sm text-blue-600">c.name(Баланс:{c.balance})</div>
-            <div>⚠️ <b>Анамнез:</b> <span id="anamnesis-text-c.tgId">{c.anamnesis || 'Нет противопоказаний'}</span></div>
-            <div class="text-gray-400">Последние тренировки: \${c.history.join(', ') || 'нет записей'}</div>
-            <button data-edit-tg="\${c.tgId}" class="text-blue-500 underline mt-1 block">Редактировать анамнез</button>
+        ${ad.map(c => `
+          <div class="p-3 bg-gray-50 rounded-xl space-y-1 text-xs client-card" data-name="\${esc(c.name.toLowerCase())}">
+            <div class="font-bold text-sm text-blue-600">esc(c.name) (Баланс: {c.balance})</div>
+            <div>⚠️ <b>Анамнез:</b> <span id="anamnesis-text-c.tgId">{esc(c.anamnesis) || 'Нет противопоказаний'}</span></div>
+            <div>🎯 <b>Цель:</b> <span>\${esc(c.goal) || 'Не указана'}</span></div>
           </div>
         `).join('')}
       </div>
@@ -290,11 +254,11 @@ function viewAdmin(){
 }
 
 /* ===== РЕНДЕР И СОБЫТИЯ ===== */
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'".replace('#39;'):'&#39;'}[c]))}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 function bind(){
-  \$app.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { S.dur = +b.dataset.dur; S.time = null; render(); });
-  app.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>S.day=b.dataset.day;S.time=null;render(););app.querySelectorAll('[data-time]').forEach(b => b.onclick = () => { S.time = b.dataset.time; S.slotId = b.dataset.id; render(); });
+  const \(app = document.getElementById('app');\)app.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { S.dur = +b.dataset.dur; S.time = null; render(); });
+  \(app.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { S.day = b.dataset.day; S.time = null; render(); });\)app.querySelectorAll('[data-time]').forEach(b => b.onclick = () => { S.time = b.dataset.time; S.slotId = b.dataset.id; render(); });
   
   const commentInput = document.getElementById('book-comment');
   if(commentInput) commentInput.oninput = (e) => S.comment = e.target.value;
@@ -302,7 +266,7 @@ function bind(){
   const bConfirm = document.getElementById('book-confirm-btn');
   if(bConfirm) bConfirm.onclick = async () => {
     bConfirm.disabled = true;
-    const res = await api('book', {slotId: S.slotId, duration: S.dur/30, comment: S.comment, currentBalance: S.profile.balance});
+    const res = await api('book', {slotId: S.slotId, duration: S.dur/30, comment: S.comment});
     if(res.confirmation_url) {
       if(tg?.openLink) tg.openLink(res.confirmation_url); else window.open(res.confirmation_url, '_blank');
     } else if(res.ok) {
@@ -313,7 +277,7 @@ function bind(){
   };
 
   \$app.querySelectorAll('[data-buy]').forEach(b => b.onclick = async () => {
-    const res = await api('pay', {tariff: b.dataset.buy, type: 'package'});
+    const res = await api('pay', {tariff: b.dataset.buy});
     if(res.confirmation_url) { if(tg?.openLink) tg.openLink(res.confirmation_url); else window.open(res.confirmation_url, '_blank'); }
     else toast('Ошибка платежной системы');
   });
@@ -321,15 +285,16 @@ function bind(){
   const freezeBtn = document.getElementById('freeze-btn');
   if(freezeBtn) freezeBtn.onclick = async () => {
     const res = await api('freeze');
-    if(res.ok){ toast('Абонемент продлен на +14 дней! ❄️'); initApp(); } else toast(res.error);
+    if(res.ok){ toast('Абонемент заморожен на 14 дней! ❄️'); initApp(); } else toast(res.error);
   };
 
   // Админские биндинги
   const blockBtn = document.getElementById('block-day-btn');
   if(blockBtn) blockBtn.onclick = async () => {
     const dateVal = document.getElementById('block-date').value;
-    const res = await api('blockDay', {date: dateVal});
+    const res = await api('block_day', {date: dateVal}); // Стыковка экшена с бэкендом
     if(res.ok) toast(`День ${dateVal} успешно заблокирован!`);
+    else toast(res.error || 'Ошибка блокировки');
   };
 
   const searchInp = document.getElementById('client-search');
@@ -338,40 +303,6 @@ function bind(){
     document.querySelectorAll('.client-card').forEach(card => {
       card.classList.toggle('hidden', !card.dataset.name.includes(q));
     });
-  };
-
-  \$app.querySelectorAll('[data-edit-tg]').forEach(b => b.onclick = async () => {
-    const tgId = b.dataset.editTg;
-    const oldText = document.getElementById(`anamnesis-text-${tgId}`).textContent;
-    const newAnamnesis = prompt("Введите новые противопоказания/анамнез клиента:", oldText);
-    if(newAnamnesis !== null){
-      const res = await api('editAnamnesis', {clientTgId: tgId, anamnesis: newAnamnesis});
-      if(res.ok){ document.getElementById(`anamnesis-text-${tgId}`).textContent = newAnamnesis; toast("Сохранено!"); }
-    }
-  });
-
-  \$app.querySelectorAll('[data-finish-id]').forEach(b => b.onclick = () => {
-    S.activeClient = { bookingId: b.dataset.finishId, tgId: b.dataset.tg };
-    document.getElementById('finish-form-block').classList.remove('hidden');
-    document.getElementById('finish-form-block').scrollIntoView({behavior: 'smooth'});
-  });
-
-  const finSave = document.getElementById('fin-save-btn');
-  if(finSave) finSave.onclick = async () => {
-    finSave.disabled = true;
-    const res = await api('finishBooking', {
-      bookingId: S.activeClient.bookingId,
-      clientTgId: S.activeClient.tgId,
-      program: document.getElementById('fin-what').value,
-      health: document.getElementById('fin-health').value
-    });
-    if(res.ok){ toast("Занятие закрыто, данные в архиве!"); loadAdmin(); }
-  };
-
-  const whisperBtn = document.getElementById('fin-whisper-btn');
-  if(whisperBtn) whisperBtn.onclick = () => {
-    toast("Имитация Whisper API: Нажмите 'Разрешить запись' в ТГ боте для аудио");
-    document.getElementById('fin-what').value = "Тренировка спины: Тяга верхнего блока 4х12, Гиперэкстензия 3х15. Состояние стабильное.";
   };
 }
 
@@ -386,7 +317,9 @@ function initSlider(){
     const rect = slider.getBoundingClientRect();
     let pos = ((x - rect.left) / rect.width) * 100;
     if(pos < 0) pos = 0; if(pos > 100) pos = 100;
-    S.sliderPos = pos; handle.style.left = `pos%`;before.style.width=`{pos}%`;
+    S.sliderPos = pos; 
+    handle.style.left = `${pos}%`;
+    before.style.width = `${pos}%`;
   };
 
   slider.onmousedown = () => isSliding = true;
@@ -399,23 +332,21 @@ function initSlider(){
 
 document.querySelectorAll('#nav button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; render(); });
 
-async function loadAdmin(){
-  const data = await api('adminInit');
-  S.adminData = data;
-  if(S.tab === 'admin') render();
-}
-
-async function initApp(){
+async function initApp() {
   try {
     const data = await api('init');
-    S.profile = data.profile;
-    S.scheduleSlots = data.scheduleSlots || [];
-    S.isAdmin = data.isAdmin || false;
-    S.loading = false;
-    if(S.isAdmin) loadAdmin();
-    render();
+    if (data.ok) {
+      S.profile = data.profile;
+      S.scheduleSlots = data.scheduleSlots || [];
+      S.isAdmin = data.isAdmin || false;
+      S.adminData = data.clientsDatabase || null; // Связываем базу CRM для тренера
+      S.loading = false;
+      render();
+    } else {
+      throw new Error(data.error);
+    }
   } catch(e) {
-    document.getElementById('app').innerHTML = '<div class="card p-4 text-center text-red-500 font-bold">Ошибка соединения с Google Таблицей.</div>';
+    document.getElementById('app').innerHTML = '<div class="card p-4 text-center text-red-500 font-bold">Ошибка соединения с бэкендом.</div>';
   }
 }
 
@@ -423,3 +354,4 @@ initApp();
 </script>
 </body>
 </html>
+ 
