@@ -396,11 +396,23 @@ document.addEventListener('input',e=>{const t=e.target;
   else if(t.id==='q'){S.q=t.value;$('#cl').innerHTML=clientRows()}
   else if(t.dataset.f&&S.sh)S.sh[t.dataset.f]=t.value});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!S.loading&&!S.busy&&!S.sh)reload().then(()=>adm()?loadAdmin():0).then(render).catch(()=>{})});
+ 
 (async function(){
   render();
-  try{await reload();S.loading=false;
-    if(adm()){S.tab='diary';await loadAdmin()}
+  try{
+    await reload();
+    if(adm()){
+      S.tab = 'diary';
+      S.loading = true; // включаем загрузку для админки
+      render();
+      await loadAdmin();
+    }
+    S.loading = false; // гарантированно выключаем скелетоны для всех
     render();
-  }catch(e){$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px;word-break:break-word">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`}
+  }catch(e){
+    S.loading = false;
+    \$('#app').innerHTML=`<div class="card"><b>Не удалось загрузить данные</b><div class="mut small" style="margin:8px 0 14px;word-break:break-word">${esc(e.message||'Проверьте соединение')}</div><button class="cta" onclick="location.reload()">Повторить</button></div>`;
+  }
 })();
+
 </script></body></html>
