@@ -206,7 +206,7 @@ function vCab(){
      :`<div class="ba ph">${p.pb?'Загрузите фото «После», чтобы увидеть сравнение':'Загрузите фото «До», затем «После»'}</div>`}
     <button class="upl" data-a="upl">${IC.cam} Загрузить новый прогресс</button></div></div>
   ${paused?`<div class="row"><span class="ico">${IC.snow}</span><div class="g"><b>Абонемент на паузе</b><small>Разморозится через ${plan(p.frozenUntil-now)}</small></div><button class="chip" data-a="unfreeze">Снять с паузы</button></div>`
-   :`<button class="row" data-a="freeze" ${p.frozen||p.balance<=0?'disabled':''}><span class="ico">${IC.snow}</span><div class="g"><b>Заморозить на 14 дней</b><small>${p.frozen?'Уже использовано для этого пакета':'Доступно 1 раз за пакет'}</small></div><span class="mut">${IC.chev}</span></button>`}
+   :`<button class="row" data-a="freeze" \${Number(p.frozen)<=0||p.balance<=0?'disabled':''}><span class="ico">\${IC.snow}</span><div class="g"><b>Заморозить абонемент</b><small>\${Number(p.frozen)<=0?'Доступные дни закончились':'Доступно для заморозки: '+p.frozen+' дн.'}</small></div><span class="mut">\${IC.chev}</span></button>`
   ${n?`<div class="card mt"><div class="lbl">Ближайшая тренировка</div><div class="sp" style="margin-top:8px"><b style="font-size:17px">${fmtDate(n.date,{day:'numeric',month:'long'})}, ${n.time}</b>
    <button class="chip" data-a="cancel" ${can?'':'disabled style="opacity:.4"'}>Отменить</button></div>${can?'':`<div class="mut small" style="margin-top:8px">Отмена недоступна: меньше ${CANCEL_LIMIT_H} часов до начала</div>`}</div>`:''}`;
 }
