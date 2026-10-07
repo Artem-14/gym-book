@@ -358,6 +358,15 @@ const ACT={
   try{const r=await api('cancel',{bookingId:n.id});if(!r.ok)throw new Error(r.error);await reload();hap.ok();toast('Запись отменена');render()}catch(e){hap.err();toast(e.message||'Не удалось отменить')}},
  freeze:async()=>{if(!await ask('Заморозить абонемент на 14 дней? Доступно один раз за пакет.'))return;
   try{const r=await api('freeze');if(!r.ok)throw new Error(r.error);Object.assign(S.p,{frozen:1,frozenUntil:r.frozenUntil,expires:r.expires});hap.ok();toast('Абонемент заморожен ❄️');render()}catch(e){hap.err();toast(e.message||'Ошибка')}},
+  unfreeze:async()=>{
+  if(!await ask('Разморозить абонемент досрочно?'))return;
+  try{
+   const r=await api('unfreeze');
+   if(!r.ok)throw new Error(r.error);
+   Object.assign(S.p,{frozenUntil:0,expires:r.expires});
+   hap.ok();toast('Абонемент разморожен 🔥');render();
+  }catch(e){hap.err();toast(e.message||'Ошибка')}
+ },
  upl:()=>pickPhoto(async d=>{const kind=S.p.pb?'after':'before';
   try{toast('Загружаю…');const r=await api('photo',{kind,data:d});if(!r.ok)throw new Error(r.error);
    if(kind==='after'){S.p.pa=r.url;S.p.paT=r.t}else{S.p.pb=r.url;S.p.pbT=r.t}hap.ok();toast('Фото сохранено');render()}catch(e){hap.err();toast(e.message||'Не удалось загрузить')}}),
